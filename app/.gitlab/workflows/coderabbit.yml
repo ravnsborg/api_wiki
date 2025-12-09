@@ -1,0 +1,11 @@
+# .github/workflows/coderabbit.yml
+name: CodeRabbit
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: coderabbitai/action@v1

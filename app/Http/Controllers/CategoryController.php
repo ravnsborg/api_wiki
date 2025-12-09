@@ -13,7 +13,7 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ListCategoryRequest $request)
+    public function index(ListCategoryRequest $request):object
     {
         $categories = Category::query();
 
@@ -39,7 +39,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateUpdateCategoryRequest $request)// : object
+    public function store(CreateUpdateCategoryRequest $request) : object
     {
         try {
             $category = Category::create($request->validated());
