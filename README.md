@@ -1,7 +1,7 @@
 
 
 ## About
-This REST API can be used to access the data layer of my demo Wiki personal organization tool. It enables seamless management of articles and categories currently with more functionality to follow. It provides a structured, reliable interface for creating, retrieving, updating, and deleting these data layers.
+This REST API can be used to access the data layer of my demo Wiki personal information tool. It enables seamless management of articles and categories currently with more functionality to follow. It provides a structured, reliable interface for creating, retrieving, updating, and deleting these data layers.
 
 ---
 
