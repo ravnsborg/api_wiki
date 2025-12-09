@@ -16,15 +16,30 @@ This REST API can be used to access the data layer of my demo Wiki personal orga
     APP_PORT=1234
    ```
 
-3. Run DB migrations to setup your table schema
+3. Generate a new application key.
+    ```
+   php artisan key:generate
+   ```
+4. Generate a new JWT secret key.
+    ```
+   php artisan jwt:secret
+   ```
 
-   ```php artisan migrate```
+5. Run DB migrations to setup your table schema
+   ```
+   php artisan migrate
+   ```
 
-4. Setup the node package manager then start it up.
+
+6. Setup the node package manager then start it up.
     ```
     npm install
     npm run dev
     ```
+7. After any environment changes, you need to clear the config cache.
+    ```
+   php artisan config:clear
+   ```
 ---
 
 ## Code Style with Pint "manual"
@@ -65,3 +80,22 @@ There are DB seeders in this applicaiton for populating your database with sampl
 
     ./vendor/bin/sail artisan db::seed
 
+
+### Login and Authentication
+To authenticate, send a `POST` request to `/api/login` with JSON body of your credentials.
+```
+    {
+        "email": "your-email@example.com",
+        "password": "your-password"
+    } 
+``` 
+A generated Bearer token is now avaiilable to be used on your endpoints.
+```
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJh...",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+d

@@ -60,7 +60,7 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id, ListArticleRequest $request)// : object
+    public function show(int $id, ListArticleRequest $request) : object
     {
         $article = Article::find($id);
 
