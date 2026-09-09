@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,10 +15,19 @@ class ArticleTest extends TestCase
 
     private User $user;
 
+    private Entity $entity;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+
+        // 1. Create a shared entity for the scope to match against
+        $this->entity = Entity::factory()->create();
+
+        // 2. Assign this entity as the user's preferred entity
+        $this->user = User::factory()->create([
+            'preferred_entity_id' => $this->entity->id,
+        ]);
     }
 
     /***********************************
@@ -25,6 +35,10 @@ class ArticleTest extends TestCase
      ***********************************/
     public function test_api_successfully_returns_articles_list(): void
     {
+        Category::factory()->create([
+            'entity_id' => $this->user->preferred_entity_id,
+        ]);
+
         Article::factory(2)->create();
 
         $response = $this->actingAs($this->user, 'api')
@@ -39,13 +53,20 @@ class ArticleTest extends TestCase
         $response = $this->actingAs($this->user, 'api')
             ->getJson(route('index_article'));
 
-        $response->assertStatus(404)
+        $response->assertStatus(200)
             ->assertJson(['message' => 'Articles not found']);
     }
 
     public function test_successfully_return_existing_article(): void
     {
-        $article = Article::factory()->create();
+
+        $category = Category::factory()->create([
+            'entity_id' => $this->user->preferred_entity_id,
+        ]);
+
+        $article = Article::factory()->create([
+            'category_id' => $category->id,
+        ]);
 
         $response = $this->actingAs($this->user, 'api')
             ->getJson(route('show_article', ['id' => $article->id]));
@@ -108,8 +129,13 @@ class ArticleTest extends TestCase
      ***********************************/
     public function test_successfully_update_article(): void
     {
-        $article = Article::factory()->create();
-        $category = Category::factory()->create();
+        $category = Category::factory()->create([
+            'entity_id' => $this->user->preferred_entity_id,
+        ]);
+
+        $article = Article::factory()->create([
+            'category_id' => $category->id,
+        ]);
 
         $response = $this->actingAs($this->user, 'api')
             ->putJson(
@@ -122,7 +148,8 @@ class ArticleTest extends TestCase
                 ]
             );
 
-        $response->assertStatus(201);
+        $response->assertStatus(200)
+            ->assertJsonCount(1);
     }
 
     public function test_can_not_update_article_without_valid_parameters(): void

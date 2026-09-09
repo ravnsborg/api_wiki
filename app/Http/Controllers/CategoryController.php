@@ -75,7 +75,12 @@ class CategoryController extends Controller
      */
     public function update(int $id, CreateUpdateCategoryRequest $request): object
     {
-        $category = Category::updateOrCreate(['id' => $id], $request->validated());
+        $entityId = $request->input('entity_id') ?: Auth::user()->preferred_entity_id;
+
+        $category = Category::updateOrCreate(['id' => $id], [
+            'title' => $request->input('title'),
+            'entity_id' => $entityId,
+        ]);
 
         return response()->json([
             'category' => new CategoryResource($category),

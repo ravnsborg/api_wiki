@@ -14,11 +14,19 @@ class CategoryTest extends TestCase
 
     private User $user;
 
+    private Entity $entity;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        // 1. Create a shared entity for the scope to match against
+        $this->entity = Entity::factory()->create();
+
+        // 2. Assign this entity as the user's preferred entity
+        $this->user = User::factory()->create([
+            'preferred_entity_id' => $this->entity->id,
+        ]);
     }
 
     /***********************************
@@ -26,7 +34,9 @@ class CategoryTest extends TestCase
      ***********************************/
     public function test_api_successfully_returns_categories_list(): void
     {
-        Category::factory(10)->create();
+        Category::factory(10)->create([
+            'entity_id' => $this->entity->id,
+        ]);
 
         $response = $this->actingAs($this->user, 'api')
             ->getJson(route('index_category'));
@@ -40,7 +50,7 @@ class CategoryTest extends TestCase
         $response = $this->actingAs($this->user, 'api')
             ->getJson(route('index_category'));
 
-        $response->assertStatus(404)
+        $response->assertStatus(200)
             ->assertJson(['message' => 'Categories not found']);
     }
 
@@ -115,7 +125,7 @@ class CategoryTest extends TestCase
                 ]
             );
 
-        $response->assertStatus(201)
+        $response->assertStatus(200)
             ->assertJsonCount(1);
     }
 

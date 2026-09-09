@@ -99,12 +99,19 @@ class ArticleController extends Controller
     public function search(Request $request): object
     {
         $searchTerm = $request->query('q');
+        $searchAllEntities = $request->boolean('all_entities');
 
-        $articles = Article::with('category')
-            ->where(function ($query) use ($searchTerm) {
-                $query->where('articles.title', 'like', "%{$searchTerm}%")
-                    ->orWhere('articles.body', 'like', "%{$searchTerm}%");
-            })
+        $articles = Article::with('category');
+
+        // Override the global scope if the user wants to search across all entities
+        if ($searchAllEntities) {
+            $articles = $articles->withoutGlobalScope('preferredEntity');
+        }
+
+        $articles = $articles->where(function ($query) use ($searchTerm) {
+            $query->where('articles.title', 'like', "%{$searchTerm}%")
+                ->orWhere('articles.body', 'like', "%{$searchTerm}%");
+        })
             ->orWhereHas('category', function ($query) use ($searchTerm) {
                 $query->where('title', 'like', "%{$searchTerm}%");
             })

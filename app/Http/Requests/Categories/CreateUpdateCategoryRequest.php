@@ -10,6 +10,7 @@ class CreateUpdateCategoryRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'entity_id' => 'sometimes|exists:entities,id',
         ];
     }
 }
